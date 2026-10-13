@@ -1,13 +1,16 @@
 <div class="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg relative">
     
-    <!-- Top Header -->
+    <!-- Top Action Header -->
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Newspaper Orders Management</h2>
-        <div class="space-x-2">
-            <a href="/delivery-log" class="bg-green-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-green-700">
+        <div class="flex items-center space-x-2">
+            <a href="/stock-procurement" class="bg-purple-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                📦 Replenish Stock
+            </a>
+            <a href="/delivery-log" class="bg-green-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-green-700 transition">
                 🚚 Delivery Log
             </a>
-            <a href="/order-form" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700">
+            <a href="/order-form" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                 + Record New Order
             </a>
         </div>
@@ -19,7 +22,7 @@
         </div>
     @endif
 
-    <!-- Dashboard KPI Cards -->
+    <!-- Real-Time Dashboard KPI Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg shadow-sm">
             <p class="text-xs font-bold text-blue-600 uppercase tracking-wide">Total Sales Revenue</p>
@@ -35,7 +38,7 @@
         </div>
     </div>
 
-    <!-- Low Stock Warning -->
+    <!-- Low Stock Warning Banner -->
     @if($lowStockProducts->count() > 0)
         <div class="mb-6 p-4 bg-amber-100 border border-amber-300 text-amber-800 rounded-lg">
             <p class="font-bold mb-1">⚠️ Low Inventory Stock Warning:</p>
@@ -50,31 +53,36 @@
         </div>
     @endif
 
-    <!-- Orders Table -->
+    <!-- Orders Management Table -->
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse border border-gray-200">
             <thead>
-                <tr class="bg-gray-100 border-b border-gray-200 text-gray-700">
-                    <th class="p-3 border-r">Order #</th>
-                    <th class="p-3 border-r">Farmer & Post Location</th>
-                    <th class="p-3 border-r">Items / Varieties</th>
-                    <th class="p-3 border-r">Total Amount</th>
-                    <th class="p-3 border-r">Payment Status & Proof</th>
-                    <th class="p-3 border-r">Delivery Status</th>
-                    <th class="p-3 border-r">Delivery Date</th>
-                    <th class="p-3 text-center">Receipt</th>
+                <tr class="bg-gray-100 border-b border-gray-200 text-gray-700 text-sm">
+                    <th class="p-3 border-r align-middle">Order #</th>
+                    <th class="p-3 border-r align-middle">Farmer & Post Location</th>
+                    <th class="p-3 border-r align-middle">Items / Varieties</th>
+                    <th class="p-3 border-r align-middle">Total Amount</th>
+                    <th class="p-3 border-r align-middle">Payment Status & Proof</th>
+                    <th class="p-3 border-r align-middle">Delivery Status</th>
+                    <th class="p-3 border-r align-middle">Delivery Date</th>
+                    <th class="p-3 text-center align-middle">Receipt</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
                 @forelse($orders as $order)
-                    <tr class="border-b border-gray-200 hover:bg-gray-50">
-                        <td class="p-3 border-r font-bold">#{{ $order->id }}</td>
-                        <td class="p-3 border-r">
+                    <tr class="hover:bg-gray-50 transition">
+                        <!-- Order # -->
+                        <td class="p-3 border-r font-bold align-middle">#{{ $order->id }}</td>
+                        
+                        <!-- Farmer & Post Location -->
+                        <td class="p-3 border-r align-middle">
                             <div class="font-semibold text-gray-800">{{ $order->customer->name }}</div>
                             <div class="text-xs text-gray-500">{{ $order->customer->delivery_post_location }}</div>
                         </td>
-                        <td class="p-3 border-r">
-                            <ul class="text-sm list-disc list-inside">
+                        
+                        <!-- Items / Varieties -->
+                        <td class="p-3 border-r align-middle">
+                            <ul class="text-sm list-disc list-inside space-y-1">
                                 @foreach($order->orderItems as $item)
                                     <li>
                                         {{ $item->product->variety_name }} ({{ $item->product->style_type }}) 
@@ -83,36 +91,55 @@
                                 @endforeach
                             </ul>
                         </td>
-                        <td class="p-3 border-r font-bold text-green-700">₱{{ number_format($order->total_amount, 2) }}</td>
-                        <td class="p-3 border-r">
+                        
+                        <!-- Total Amount -->
+                        <td class="p-3 border-r font-bold text-green-700 whitespace-nowrap align-middle">
+                            ₱{{ number_format($order->total_amount, 2) }}
+                        </td>
+                        
+                        <!-- Payment Status & Proof (Unified Clean Alignment) -->
+                        <td class="p-3 border-r align-middle">
                             <div class="flex items-center space-x-2">
-                                <span class="px-2 py-1 text-xs font-bold rounded {{ $order->payment_status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                <span class="px-2.5 py-1 text-xs font-bold rounded-md whitespace-nowrap {{ $order->payment_status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                     {{ $order->payment_status }}
                                 </span>
-                                <button wire:click="openPaymentModal({{ $order->id }})" class="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded hover:bg-blue-200">
-                                    📷 {{ $order->proof_of_payment_path ? 'View/Update Proof' : 'Upload Proof' }}
+                                
+                                <button wire:click="openPaymentModal({{ $order->id }})" class="text-xs bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded-md hover:bg-blue-200 transition inline-flex items-center space-x-1 whitespace-nowrap">
+                                    <span>📷</span>
+                                    <span>{{ $order->proof_of_payment_path ? 'View Proof' : 'Upload Proof' }}</span>
                                 </button>
                             </div>
+                            
                             @if($order->proof_of_payment_path)
                                 <div class="mt-1">
-                                    <a href="{{ asset('storage/' . $order->proof_of_payment_path) }}" target="_blank" class="text-xs text-blue-600 underline font-semibold">
-                                        View Uploaded Slip 🔗
+                                    <a href="{{ asset('storage/' . $order->proof_of_payment_path) }}" target="_blank" class="text-xs text-blue-600 hover:underline font-semibold inline-flex items-center space-x-1">
+                                        <span>View Uploaded Slip</span>
+                                        <span>🔗</span>
                                     </a>
                                 </div>
                             @endif
                         </td>
-                        <td class="p-3 border-r">
-                            <select wire:change="updateOrderStatus({{ $order->id }}, $event.target.value)" class="text-sm border rounded p-1 font-semibold">
+                        
+                        <!-- Delivery Status Dropdown -->
+                        <td class="p-3 border-r align-middle">
+                            <select wire:change="updateOrderStatus({{ $order->id }}, $event.target.value)" class="text-sm border border-gray-300 rounded-md p-1.5 font-semibold bg-white shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
                                 <option value="Pending" {{ $order->status === 'Pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="Picked Up" {{ $order->status === 'Picked Up' ? 'selected' : '' }}>Picked Up</option>
                                 <option value="Delivered" {{ $order->status === 'Delivered' ? 'selected' : '' }}>Delivered</option>
                                 <option value="Cancelled" {{ $order->status === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                             </select>
                         </td>
-                        <td class="p-3 border-r text-sm text-gray-600">{{ $order->delivery_date }}</td>
-                        <td class="p-3 text-center">
-                            <a href="/invoices/{{ $order->id }}" target="_blank" class="bg-gray-200 text-gray-800 text-xs px-3 py-1 rounded font-bold hover:bg-gray-300">
-                                📄 Receipt
+                        
+                        <!-- Delivery Date -->
+                        <td class="p-3 border-r text-sm text-gray-600 whitespace-nowrap align-middle">
+                            {{ $order->delivery_date }}
+                        </td>
+                        
+                        <!-- Receipt Action -->
+                        <td class="p-3 text-center align-middle">
+                            <a href="/invoices/{{ $order->id }}" target="_blank" class="bg-gray-200 text-gray-800 text-xs px-3 py-1.5 rounded-md font-bold hover:bg-gray-300 transition inline-flex items-center space-x-1 whitespace-nowrap">
+                                <span>📄</span>
+                                <span>Receipt</span>
                             </a>
                         </td>
                     </tr>

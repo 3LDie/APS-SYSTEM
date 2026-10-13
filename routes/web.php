@@ -37,5 +37,9 @@ Route::get('/delivery-log', function () {
     return view('delivery-log-container');
 });
 
+Route::get('/stock-procurement', function () {
+    return view('stock-procurement-container');
+});
+
 // Invoice / Printable Receipt Route
 Route::get('/invoices/{id}', [InvoiceController::class, 'show']);
