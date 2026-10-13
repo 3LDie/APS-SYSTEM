@@ -9,7 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
-    protected $fillable = ['customer_id', 'order_date', 'delivery_date', 'status', 'payment_status', 'total_amount'];
+    protected $fillable = [
+        'customer_id', 
+        'order_date', 
+        'delivery_date', 
+        'status', 
+        'payment_status', 
+        'proof_of_payment_path', 
+        'total_amount'
+    ];
 
     public function customer(): BelongsTo
     {
