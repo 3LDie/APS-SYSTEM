@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Models\Customer;
@@ -35,3 +36,6 @@ Route::get('/orders-ui', function () {
 Route::get('/delivery-log', function () {
     return view('delivery-log-container');
 });
+
+// Invoice / Printable Receipt Route
+Route::get('/invoices/{id}', [InvoiceController::class, 'show']);

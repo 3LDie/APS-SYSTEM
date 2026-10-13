@@ -1,9 +1,14 @@
 <div class="max-w-6xl mx-auto p-6 bg-white shadow-md rounded-lg">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Newspaper Orders Management</h2>
-        <a href="/order-form" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700">
-            + Record New Order
-        </a>
+        <div class="space-x-2">
+            <a href="/delivery-log" class="bg-green-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-green-700">
+                🚚 Delivery Log
+            </a>
+            <a href="/order-form" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700">
+                + Record New Order
+            </a>
+        </div>
     </div>
 
     @if (session()->has('success'))
@@ -22,7 +27,8 @@
                     <th class="p-3 border-r">Total Amount</th>
                     <th class="p-3 border-r">Payment Status</th>
                     <th class="p-3 border-r">Delivery Status</th>
-                    <th class="p-3">Delivery Date</th>
+                    <th class="p-3 border-r">Delivery Date</th>
+                    <th class="p-3 text-center">Receipt</th>
                 </tr>
             </thead>
             <tbody>
@@ -59,11 +65,16 @@
                                 <option value="Cancelled" {{ $order->status === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                             </select>
                         </td>
-                        <td class="p-3 text-sm text-gray-600">{{ $order->delivery_date }}</td>
+                        <td class="p-3 border-r text-sm text-gray-600">{{ $order->delivery_date }}</td>
+                        <td class="p-3 text-center">
+                            <a href="/invoices/{{ $order->id }}" target="_blank" class="bg-gray-200 text-gray-800 text-xs px-3 py-1 rounded font-bold hover:bg-gray-300">
+                                📄 Receipt
+                            </a>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="p-4 text-center text-gray-500">No orders recorded yet.</td>
+                        <td colspan="8" class="p-4 text-center text-gray-500">No orders recorded yet.</td>
                     </tr>
                 @endforelse
             </tbody>
