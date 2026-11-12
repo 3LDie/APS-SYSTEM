@@ -41,7 +41,7 @@ class StockProcurement extends Component
             DB::commit();
 
             session()->flash('success', "Successfully added {$this->quantity_added} bundles to {$product->variety_name} ({$product->style_type}) stock!");
-            return redirect()->to('/orders-ui');
+            return redirect()->to('/products');
 
         } catch (\Exception $e) {
             DB::rollBack();

@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -49,7 +50,7 @@ class OrderController extends Controller
 
             foreach ($request->items as $item) {
                 $product = Product::findOrFail($item['product_id']);
-                
+
                 if ($product->stock_quantity < $item['quantity']) {
                     throw new \Exception("Insufficient stock for {$product->variety_name} ({$product->style_type}). Available: {$product->stock_quantity}");
                 }
@@ -82,7 +83,7 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             if (request()->wantsJson()) {
                 return response()->json(['error' => $e->getMessage()], 422);
             }
@@ -91,19 +92,30 @@ class OrderController extends Controller
         }
     }
 
-    // Update order status and payment status
+    // Update order status, payment status, and optional proof of payment slip
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:Pending,Delivered,Cancelled',
-            'payment_status' => 'required|in:Unpaid,Paid',
+            'status' => 'required|in:Pending,Picked Up,Delivered,Cancelled',
+            'payment_status' => 'required|in:Unpaid,Partial,Paid',
+            'proof_of_payment' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        $imagePath = $order->proof_of_payment_path;
+
+        if ($request->hasFile('proof_of_payment')) {
+            if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+            $imagePath = $request->file('proof_of_payment')->store('payment-proofs', 'public');
+        }
 
         $order->update([
             'status' => $request->status,
             'payment_status' => $request->payment_status,
+            'proof_of_payment_path' => $imagePath,
         ]);
 
-        return redirect('/orders')->with('success', "Order #{$order->id} status updated successfully!");
+        return redirect('/orders')->with('success', "Order #{$order->id} updated successfully!");
     }
 }

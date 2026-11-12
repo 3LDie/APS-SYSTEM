@@ -7,6 +7,9 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Inventory Stock & Pricing Management</h1>
             <div class="flex items-center space-x-3">
+                <a href="/stock-procurement" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition">
+                    📦 Replenish Stock
+                </a>
                 <a href="/orders" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-lg shadow-sm transition">
                     View Orders
                 </a>

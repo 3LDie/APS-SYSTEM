@@ -1,9 +1,10 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ $order->id }} - Newspaper Distribution</title>
+    <title>Invoice #{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }} - APS Distribution</title>
+    <link rel="icon" type="image/webp" href="{{ asset('images/APS-logo.webp') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -12,6 +13,11 @@
             }
             body {
                 background-color: white !important;
+                padding: 0 !important;
+            }
+            .receipt-card {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb !important;
             }
         }
     </style>
@@ -20,20 +26,23 @@
 
     <!-- Print Action Buttons -->
     <div class="max-w-3xl mx-auto mb-6 flex justify-between items-center no-print">
-        <a href="/orders-ui" class="text-gray-600 hover:text-gray-900 font-semibold">&larr; Back to Dashboard</a>
-        <button onclick="window.print()" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-lg shadow hover:bg-blue-700">
+        <a href="/orders" class="text-gray-600 hover:text-gray-900 font-semibold">&larr; Back to Orders</a>
+        <button onclick="window.print()" class="bg-blue-600 text-white font-bold px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition">
             🖨️ Print Receipt / Save PDF
         </button>
     </div>
 
     <!-- Printable Receipt Card -->
-    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200">
+    <div class="receipt-card max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200">
         <!-- Header -->
         <div class="flex justify-between items-start border-b pb-6 mb-6">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">APS Newspaper Supply</h1>
-                <p class="text-sm text-gray-500">Vegetable-Wrapping Newspaper Distributor</p>
-                <p class="text-xs text-gray-400 mt-1">Trading Post / Farm Delivery Service</p>
+            <div class="flex items-center space-x-3">
+                <img src="{{ asset('images/APS-logo.webp') }}" alt="APS Logo" class="h-12 w-auto">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">APS Distribution</h1>
+                    <p class="text-sm text-gray-500">Vegetable-Wrapping Newspaper Distributor</p>
+                    <p class="text-xs text-gray-400 mt-1">Trading Post / Farm Delivery Service</p>
+                </div>
             </div>
             <div class="text-right">
                 <h2 class="text-xl font-bold text-blue-600">OFFICIAL RECEIPT</h2>
@@ -54,7 +63,7 @@
                 <p class="font-bold text-gray-700">Status Overview:</p>
                 <p class="text-gray-800 font-semibold">
                     Payment Status: 
-                    <span class="{{ $order->payment_status === 'Paid' ? 'text-green-600' : 'text-red-600' }}">
+                    <span class="{{ $order->payment_status === 'Paid' ? 'text-green-600' : ($order->payment_status === 'Partial' ? 'text-amber-600' : 'text-red-600') }}">
                         {{ strtoupper($order->payment_status) }}
                     </span>
                 </p>
