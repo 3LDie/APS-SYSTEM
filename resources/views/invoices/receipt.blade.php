@@ -36,12 +36,12 @@
     <div class="receipt-card max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md border border-gray-200">
         <!-- Header -->
         <div class="flex justify-between items-start border-b pb-6 mb-6">
-            <div class="flex items-center space-x-3">
-                <img src="{{ asset('images/APS-logo.webp') }}" alt="APS Logo" class="h-12 w-auto">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">APS Distribution</h1>
-                    <p class="text-sm text-gray-500">Vegetable-Wrapping Newspaper Distributor</p>
-                    <p class="text-xs text-gray-400 mt-1">Trading Post / Farm Delivery Service</p>
+            <div class="flex items-center gap-3.5">
+                <img src="{{ asset('images/APS-logo.webp') }}" alt="APS Logo" class="h-16 w-16 object-contain mix-blend-multiply shrink-0">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-2xl font-bold text-gray-800 leading-tight">APS Distribution</h1>
+                    <p class="text-sm text-gray-500 leading-snug">Vegetable-Wrapping Newspaper Distributor</p>
+                    <p class="text-xs text-gray-400 leading-snug">Trading Post / Farm Delivery Service</p>
                 </div>
             </div>
             <div class="text-right">
