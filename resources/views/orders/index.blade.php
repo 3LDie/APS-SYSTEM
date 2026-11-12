@@ -1,88 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newspaper Distribution - Order History</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 py-10">
+@extends('layouts.app')
+
+@section('title', 'Orders Management - APS Distribution')
+
+@section('content')
     <div class="max-w-7xl mx-auto px-6">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold text-gray-800">Farmer Orders & Distribution History</h2>
-            <a href="/order-form" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 font-semibold">+ Record New Order</a>
+            <h1 class="text-3xl font-bold text-gray-800">Farmer Orders & Distribution History</h1>
+            <a href="/order-form" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-lg shadow-sm transition">
+                + Record New Order
+            </a>
         </div>
 
-        @if(session('success'))
-            <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+        @if (session('success'))
+            <div class="mb-4 p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg font-medium">
                 {{ session('success') }}
             </div>
         @endif
 
-        @if($orders->isEmpty())
-            <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-                No orders have been recorded yet. Go ahead and submit an order from the order form!
-            </div>
-        @else
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Farmer / Post</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items Ordered</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manage Status</th>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <th class="p-4">Order ID</th>
+                            <th class="p-4">Farmer / Post</th>
+                            <th class="p-4">Items Ordered</th>
+                            <th class="p-4">Total Amount</th>
+                            <th class="p-4">Delivery Date</th>
+                            <th class="p-4">Manage Status</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($orders as $order)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ $order->id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                    <div class="font-semibold">{{ $order->customer->name ?? 'N/A' }}</div>
-                                    <div class="text-xs text-gray-500">{{ $order->customer->delivery_post_location ?? '' }}</div>
+                    <tbody class="divide-y divide-gray-200 text-sm">
+                        @forelse($orders as $order)
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="p-4 font-bold text-gray-900">#{{ $order->id }}</td>
+                                <td class="p-4">
+                                    <div class="font-bold text-gray-800">{{ $order->customer->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $order->customer->delivery_post_location }}</div>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-700">
-                                    <ul class="list-disc list-inside">
+                                <td class="p-4">
+                                    <ul class="list-disc list-inside text-gray-700 space-y-1">
                                         @foreach($order->orderItems as $item)
                                             <li>
-                                                {{ $item->product->variety_name ?? 'Item' }} [{{ $item->product->style_type ?? '' }}] 
-                                                &times; {{ $item->quantity }} (₱{{ number_format($item->subtotal, 2) }})
+                                                {{ $item->product->variety_name }} [{{ $item->product->style_type }}] &times; {{ $item->quantity }} (₱{{ number_format($item->subtotal, 2) }})
                                             </li>
                                         @endforeach
                                     </ul>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">₱{{ number_format($order->total_amount, 2) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->delivery_date }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <td class="p-4 font-bold text-gray-900">₱{{ number_format($order->total_amount, 2) }}</td>
+                                <td class="p-4 text-gray-600">{{ $order->delivery_date }}</td>
+                                <td class="p-4">
                                     <form action="{{ route('orders.updateStatus', $order->id) }}" method="POST" class="flex items-center space-x-2">
                                         @csrf
                                         @method('PATCH')
-                                        
-                                        <!-- Status Selector -->
-                                        <select name="status" class="text-xs border-gray-300 rounded p-1 border">
-                                            <option value="Pending" {{ $order->status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                            <option value="Delivered" {{ $order->status == 'Delivered' ? 'selected' : '' }}>Delivered</option>
-                                            <option value="Cancelled" {{ $order->status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                        <select name="status" class="border border-gray-300 rounded-md px-2.5 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="Pending" {{ $order->status === 'Pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="Picked Up" {{ $order->status === 'Picked Up' ? 'selected' : '' }}>Picked Up</option>
+                                            <option value="Delivered" {{ $order->status === 'Delivered' ? 'selected' : '' }}>Delivered</option>
+                                            <option value="Cancelled" {{ $order->status === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                                         </select>
-
-                                        <!-- Payment Status Selector -->
-                                        <select name="payment_status" class="text-xs border-gray-300 rounded p-1 border">
-                                            <option value="Unpaid" {{ $order->payment_status == 'Unpaid' ? 'selected' : '' }}>Unpaid</option>
-                                            <option value="Paid" {{ $order->payment_status == 'Paid' ? 'selected' : '' }}>Paid</option>
+                                        <select name="payment_status" class="border border-gray-300 rounded-md px-2.5 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="Unpaid" {{ $order->payment_status === 'Unpaid' ? 'selected' : '' }}>Unpaid</option>
+                                            <option value="Partial" {{ $order->payment_status === 'Partial' ? 'selected' : '' }}>Partial</option>
+                                            <option value="Paid" {{ $order->payment_status === 'Paid' ? 'selected' : '' }}>Paid</option>
                                         </select>
-
-                                        <button type="submit" class="bg-indigo-600 text-white px-2 py-1 text-xs rounded hover:bg-indigo-700">Update</button>
+                                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-md text-xs transition">
+                                            Update
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="p-6 text-center text-gray-500">No farmer orders recorded yet.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
-        @endif
+        </div>
     </div>
-</body>
-</html>
+@endsection

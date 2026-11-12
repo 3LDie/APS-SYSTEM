@@ -1,14 +1,20 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeliveryLogController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Route;
 
+// Default Home Redirects to Executive Dashboard
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/dashboard');
 });
+
+// Executive Overview Dashboard
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // Inventory Management Routes
 Route::get('/products', [ProductController::class, 'index']);
@@ -19,7 +25,7 @@ Route::get('/customers', function() {
     return Customer::all();
 });
 
-// Order API JSON Routes
+// Order API & Dashboard Routes
 Route::get('/orders', [OrderController::class, 'index']);
 Route::post('/orders', [OrderController::class, 'store']);
 Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
@@ -33,9 +39,8 @@ Route::get('/orders-ui', function () {
     return view('order-list-container');
 });
 
-Route::get('/delivery-log', function () {
-    return view('delivery-log-container');
-});
+// Delivery Log Route (Wired to DeliveryLogController)
+Route::get('/delivery-log', [DeliveryLogController::class, 'index']);
 
 Route::get('/stock-procurement', function () {
     return view('stock-procurement-container');
